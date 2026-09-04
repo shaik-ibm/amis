@@ -1,0 +1,789 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+<meta name="theme-color" content="#2A2622">
+<title>AMIS Real Estate Development — Daily Sales Report</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet">
+</head>
+<body>
+<!-- AMIS Real Estate Development — Daily Sales Manager Report (mobile-first) -->
+<style>
+  :root{
+    --gold:#EFA865; --bronze:#C9803F; --ink:#2A2622; --ink-deep:#1C1916;
+    --stone:#8C8178; --stone-text:#736860; --bronze-text:#9C5F26;
+    --sand:#E7DCCD; --ivory:#FBF6EF; --white:#FFF; --alert:#A6432B; --ok:#1E8449;
+    --line:var(--sand); --track:.075em; --pad:clamp(16px,4.5vw,40px);
+  }
+  *,*::before,*::after{box-sizing:border-box;-webkit-tap-highlight-color:transparent;}
+  html{-webkit-text-size-adjust:100%;}
+  body{
+    margin:0;background:var(--ivory);color:var(--ink);
+    font-family:'DM Sans','Helvetica Neue',Helvetica,Arial,sans-serif;
+    font-size:16px;line-height:1.6;-webkit-font-smoothing:antialiased;
+    padding-bottom:104px;               /* room for the sticky submit bar */
+  }
+  main{width:100%;max-width:680px;margin-inline:auto;padding:0 var(--pad);}
+
+  /* ---------- header ---------- */
+  .masthead{
+    background:var(--ink);color:var(--ivory);
+    padding:22px var(--pad);
+    padding-top:calc(env(safe-area-inset-top) + 22px);
+    margin-bottom:32px; margin-bottom:clamp(20px,5vw,32px);
+    border-bottom:3px solid var(--bronze);
+  }
+  .masthead .inner{max-width:680px;margin-inline:auto;}
+  .eyebrow{
+    margin:0 0 6px;font-size:10.5px;font-weight:500;letter-spacing:var(--track);
+    text-transform:uppercase;color:var(--gold);
+  }
+  h1{
+    font-family:'Playfair Display',Georgia,'Times New Roman',serif;
+    font-weight:400;font-size:30px; font-size:clamp(22px,6vw,30px);line-height:1.2;
+    letter-spacing:-.02em;margin:0;
+  }
+  .lede{
+    font-size:14px;font-weight:300;line-height:1.65;color:var(--stone-text);
+    margin:0 0 clamp(22px,5vw,32px);
+  }
+
+  /* ---------- sections ---------- */
+  section{margin:0 0 clamp(24px,6vw,36px);}
+  .section-head{
+    display:flex;align-items:center;gap:12px;
+    margin-bottom:16px;padding-bottom:10px;border-bottom:1px solid var(--ink);
+  }
+  .tag{
+    flex:0 0 26px;width:26px;height:26px;border-radius:50%;
+    background:var(--ink);color:var(--ivory);
+    display:flex;align-items:center;justify-content:center;
+    font-size:12px;font-weight:600;
+  }
+  .section-head h2{
+    margin:0;font-family:'Playfair Display',Georgia,serif;font-weight:400;
+    font-size:19px; font-size:clamp(16px,4.2vw,19px);line-height:1.3;letter-spacing:-.02em;
+  }
+  .qualifier{display:block;font-family:inherit;font-size:12px;font-weight:300;color:var(--stone-text);}
+
+  /* ---------- fields ---------- */
+  .grid{display:grid;grid-template-columns:1fr;gap:14px;}
+  @media (min-width:560px){ .grid{grid-template-columns:1fr 1fr;} }
+  .field label{
+    display:block;font-size:13.5px;font-weight:500;color:var(--ink);
+    margin-bottom:6px;line-height:1.35;
+  }
+  .field input,.field select{
+    width:100%;min-height:52px;padding:13px 14px;
+    border:1px solid var(--line);border-radius:6px;background:var(--white);
+    color:var(--ink);font-family:inherit;font-size:16px;   /* 16px stops iOS zooming */
+  }
+  .field input:focus,.field select:focus{
+    outline:none;border-color:var(--gold);box-shadow:0 0 0 3px rgba(239,168,101,.28);
+  }
+  .field input.err,.field select.err{border-color:var(--alert);background:#FDF4F2;}
+  .field select{
+    appearance:none;-webkit-appearance:none;padding-right:40px;
+    background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20' fill='%238C8178'%3E%3Cpath fill-rule='evenodd' d='M5.23 7.21a.75.75 0 011.06.02L10 11.19l3.71-3.96a.75.75 0 111.08 1.04l-4.25 4.5a.75.75 0 01-1.08 0l-4.25-4.5a.75.75 0 01.02-1.06z' clip-rule='evenodd'/%3E%3C/svg%3E");
+    background-repeat:no-repeat;background-position:right 14px center;background-size:18px;
+  }
+  .datefixed{
+    width:100%;min-height:52px;padding:13px 14px;box-sizing:border-box;
+    border:1px solid var(--line);border-radius:6px;background:#F4F0EA;
+    color:var(--stone-text);font-family:inherit;font-size:16px;
+    display:flex;align-items:center;
+  }
+  .leavebar{
+    margin:14px 0 0;padding:12px 14px;border-left:4px solid var(--gold);
+    background:#FBF3E7;color:#7A4A1C;font-size:13.5px;line-height:1.55;border-radius:4px;
+  }
+  .onleave .grid input{background:#F4F0EA;color:#8C8178;}
+  .onleave #grp-today, .onleave #grp-tomorrow, .onleave #grp-output{opacity:.55;}
+  .req{color:var(--alert);font-weight:600;}
+  .req-note{font-size:12.5px;font-weight:300;color:var(--stone-text);margin:0 0 22px;}
+
+  /* ---------- sticky submit ---------- */
+  .submitbar{
+    position:fixed;left:0;right:0;bottom:0;z-index:50;
+    background:rgba(251,246,239,.97);
+    backdrop-filter:saturate(180%) blur(8px);
+    -webkit-backdrop-filter:saturate(180%) blur(8px);
+    border-top:1px solid var(--sand);
+    padding:12px var(--pad) 12px;
+    padding-bottom:calc(env(safe-area-inset-bottom) + 12px);
+  }
+  .submitbar .inner{max-width:680px;margin-inline:auto;}
+  #submitBtn{
+    width:100%;min-height:54px;border:0;border-radius:6px;
+    background:var(--ink);color:var(--ivory);
+    font-family:inherit;font-size:14px;font-weight:500;
+    letter-spacing:var(--track);text-transform:uppercase;cursor:pointer;
+  }
+  #submitBtn:active{background:var(--ink-deep);}
+  #submitBtn:disabled{opacity:.55;cursor:not-allowed;}
+  #status{display:none;margin:10px 0 0;font-size:13px;line-height:1.5;text-align:center;}
+
+  /* ---------- voice control ---------- */
+  .voice-row{display:flex;align-items:center;gap:10px;margin:0 0 10px;}
+  .mic-btn{
+    flex:0 0 44px;width:44px;height:44px;border-radius:50%;
+    border:1px solid var(--bronze);background:var(--white);color:var(--bronze-text);
+    display:flex;align-items:center;justify-content:center;cursor:pointer;
+    transition:background .15s,box-shadow .15s,color .15s;
+  }
+  .mic-btn.listening{
+    background:var(--gold);color:var(--ink);border-color:var(--gold);
+    box-shadow:0 0 0 5px rgba(239,168,101,.25);
+    animation:micpulse 1.6s infinite;
+  }
+  @keyframes micpulse{
+    0%{box-shadow:0 0 0 0 rgba(239,168,101,.35);}
+    70%{box-shadow:0 0 0 10px rgba(239,168,101,0);}
+    100%{box-shadow:0 0 0 0 rgba(239,168,101,0);}
+  }
+  .mic-btn:disabled{opacity:.4;cursor:not-allowed;}
+  .voice-caption{flex:1;min-width:0;text-align:left;}
+  #voiceState{font-size:12.5px;font-weight:500;color:var(--ink);}
+  #voiceHeard{font-size:12px;font-weight:300;color:var(--stone-text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+  .voice-help-btn{
+    flex:0 0 30px;width:30px;height:30px;border-radius:50%;border:1px solid var(--sand);
+    background:var(--white);color:var(--stone-text);font-size:12px;cursor:pointer;
+  }
+  .voice-help{
+    display:none;text-align:left;font-size:12px;font-weight:300;color:var(--stone-text);
+    line-height:1.6;background:var(--white);border:1px solid var(--sand);border-radius:6px;
+    padding:10px 12px;margin:0 0 10px;
+  }
+  .voice-help.open{display:block;}
+  .voice-help code{
+    background:#F4F0EA;color:var(--ink);padding:1px 5px;border-radius:4px;font-size:11px;
+  }
+
+  /* ---------- confirmation ---------- */
+  .overlay{
+    position:fixed;inset:0;z-index:100;display:none;
+    align-items:center;justify-content:center;padding:20px;
+    background:rgba(28,25,22,.75);
+  }
+  .overlay.on{display:flex;}
+  .card{
+    background:var(--ivory);border-radius:8px;width:100%;max-width:420px;
+    padding:36px; padding:clamp(26px,7vw,36px);text-align:center;
+  }
+  .card .check{
+    width:52px;height:52px;border-radius:50%;background:var(--gold);color:var(--ink);
+    display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;
+  }
+  .card h3{
+    font-family:'Playfair Display',Georgia,serif;font-weight:400;font-size:21px;
+    margin:0 0 10px;color:var(--ink);
+  }
+  .card p{font-size:14px;font-weight:300;line-height:1.65;color:var(--stone-text);margin:0 0 20px;}
+  .card button{
+    min-height:48px;width:100%;border:1px solid var(--sand);border-radius:6px;
+    background:var(--sand);color:var(--ink);font-family:inherit;font-size:13px;
+    font-weight:500;letter-spacing:var(--track);text-transform:uppercase;cursor:pointer;
+  }
+  .card .warn{
+    width:52px;height:52px;border-radius:50%;background:var(--alert);color:#FFF;
+    display:flex;align-items:center;justify-content:center;margin:0 auto 16px;
+    font-size:26px;font-weight:600;
+  }
+  .misslist{
+    margin:0 0 20px;padding:12px 16px 12px 32px;list-style:disc;
+    background:var(--white);border:1px solid var(--sand);border-radius:6px;
+    max-height:180px;overflow-y:auto;
+  }
+  .misslist li{font-size:13.5px;color:var(--ink);margin:0 0 5px;line-height:1.45;}
+  .misslist li:last-child{margin-bottom:0;}
+  .card button.primary{background:var(--ink);border-color:var(--ink);color:var(--ivory);}
+  footer{
+    max-width:680px;margin:0 auto;padding:0 var(--pad) 28px;
+    font-size:12px;font-weight:300;color:var(--stone-text);text-align:center;
+  }
+</style>
+
+<div class="masthead">
+  <div class="inner">
+    <p class="eyebrow">AMIS Real Estate Development</p>
+    <h1>Daily Sales Manager Report</h1>
+  </div>
+</div>
+
+<noscript>
+  <div style="max-width:680px;margin:0 auto 18px;padding:14px 18px;background:#FBEDEA;
+              border-left:5px solid #A6432B;border-radius:3px;
+              font-family:'DM Sans',Arial,sans-serif;">
+    <p style="margin:0;font-size:13.5px;line-height:1.6;color:#2A2622;">
+      <strong>Type 0 in every field with no activity.</strong> The form will not submit
+      while any field is blank.
+    </p>
+  </div>
+</noscript>
+
+<form id="kpiForm" method="post" action="https://script.google.com/macros/s/AKfycbzWj2PtugQXuuVPQKnMBSMVxIzWmkMzAQ2kY8MWZhVjNChHNmfir1fC4eDpOR8GYguZ/exec" accept-charset="UTF-8" target="_top">
+
+<main>
+  <p class="lede">Log today's field activity, tomorrow's plan and your engagement numbers.
+    Your report is emailed to you the moment you submit.</p>
+  <p class="req-note"><span class="req">*</span> <strong>Every field is mandatory.</strong> Enter <strong>0</strong> where there was no activity &mdash; do not leave a field blank.</p>
+
+  <section>
+    <div class="section-head"><span class="tag">1</span><h2>Report Details</h2></div>
+    <div class="grid">
+      <div class="field">
+        <label>Date</label>
+        <div class="datefixed" id="reportDate">Today</div>
+      </div>
+      <div class="field">
+        <label for="salesManager">Sales Manager (Select your Name) <span class="req">*</span></label>
+        <select id="salesManager" name="salesManager" autocomplete="off" required>
+          <option value="" selected disabled>Select your Name</option>
+          <option value="Alejandro">Alejandro</option>
+          <option value="Elaheh">Elaheh</option>
+          <option value="Hassan">Hassan</option>
+          <option value="Soha">Soha</option>
+          <option value="Valeria">Valeria</option>
+        </select>
+      </div>
+      <div class="field">
+        <label for="dayStatus">Today's Status <span class="req">*</span></label>
+        <select id="dayStatus" name="onLeave" autocomplete="off" required>
+          <option value="no" selected>Reporting as normal</option>
+          <option value="yes">On leave today</option>
+        </select>
+      </div>
+    </div>
+    <p class="leavebar" id="leaveBar" hidden>Marked <strong>on leave</strong> for today &mdash;
+      every figure below will be submitted as <strong>0</strong>. Just press Submit Report.</p>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="tag">2</span>
+      <h2>Today's Field Activity<span class="qualifier">calls, briefings &amp; meetings</span></h2>
+    </div>
+    <div class="grid" id="grp-today">
+      <div class="field">
+        <label for="calloutsToday">Total Callouts Today (Connected Calls) <span class="req">*</span></label>
+        <input type="text" id="calloutsToday" name="calloutsToday" inputmode="numeric" pattern="[0-9]*"
+               required title="Numbers only — enter 0 if there was no activity"
+               maxlength="6" autocomplete="off" placeholder="0">
+      </div>
+      <div class="field">
+        <label for="briefingsToday">Agency Briefings <span class="req">*</span></label>
+        <input type="text" id="briefingsToday" name="briefingsToday" inputmode="numeric" pattern="[0-9]*"
+               required title="Numbers only — enter 0 if there was no activity"
+               maxlength="6" autocomplete="off" placeholder="0">
+      </div>
+      <div class="field">
+        <label for="meetingsInsideToday">Broker Meetings — Inside Office <span class="req">*</span></label>
+        <input type="text" id="meetingsInsideToday" name="meetingsInsideToday" inputmode="numeric" pattern="[0-9]*"
+               required title="Numbers only — enter 0 if there was no activity"
+               maxlength="6" autocomplete="off" placeholder="0">
+      </div>
+      <div class="field">
+        <label for="meetingsOutsideToday">Broker Meetings — Outside Office <span class="req">*</span></label>
+        <input type="text" id="meetingsOutsideToday" name="meetingsOutsideToday" inputmode="numeric" pattern="[0-9]*"
+               required title="Numbers only — enter 0 if there was no activity"
+               maxlength="6" autocomplete="off" placeholder="0">
+      </div>
+      <div class="field">
+        <label for="clientMeetingsToday">Client Meetings Today <span class="req">*</span></label>
+        <input type="text" id="clientMeetingsToday" name="clientMeetingsToday" inputmode="numeric" pattern="[0-9]*"
+               required title="Numbers only — enter 0 if there was no activity"
+               maxlength="6" autocomplete="off" placeholder="0">
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="tag">3</span><h2>Tomorrow's Plan</h2></div>
+    <div class="grid" id="grp-tomorrow">
+      <div class="field">
+        <label for="briefingsInsideTomorrow">Broker Meetings Inside The Office Tomorrow <span class="req">*</span></label>
+        <input type="text" id="briefingsInsideTomorrow" name="briefingsInsideTomorrow" inputmode="numeric" pattern="[0-9]*"
+               required title="Numbers only — enter 0 if there was no activity"
+               maxlength="6" autocomplete="off" placeholder="0">
+      </div>
+      <div class="field">
+        <label for="briefingsOutsideTomorrow">Broker Meetings Outside The Office Tomorrow <span class="req">*</span></label>
+        <input type="text" id="briefingsOutsideTomorrow" name="briefingsOutsideTomorrow" inputmode="numeric" pattern="[0-9]*"
+               required title="Numbers only — enter 0 if there was no activity"
+               maxlength="6" autocomplete="off" placeholder="0">
+      </div>
+      <div class="field">
+        <label for="clientMeetingsTomorrow">Client Meetings Tomorrow <span class="req">*</span></label>
+        <input type="text" id="clientMeetingsTomorrow" name="clientMeetingsTomorrow" inputmode="numeric" pattern="[0-9]*"
+               required title="Numbers only — enter 0 if there was no activity"
+               maxlength="6" autocomplete="off" placeholder="0">
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <div class="section-head"><span class="tag">4</span>
+      <h2>Output &amp; Engagement<span class="qualifier">today</span></h2>
+    </div>
+    <div class="grid" id="grp-output">
+      <div class="field">
+        <label for="brokerageRegInitiated">Brokerage Registration Initiated Today <span class="req">*</span></label>
+        <input type="text" id="brokerageRegInitiated" name="brokerageRegInitiated" inputmode="numeric" pattern="[0-9]*"
+               required title="Numbers only — enter 0 if there was no activity"
+               maxlength="6" autocomplete="off" placeholder="0">
+      </div>
+      <div class="field">
+        <label for="picturesSubmitted">Pictures Submitted Today <span class="req">*</span></label>
+        <input type="text" id="picturesSubmitted" name="picturesSubmitted" inputmode="numeric" pattern="[0-9]*"
+               required title="Numbers only — enter 0 if there was no activity"
+               maxlength="6" autocomplete="off" placeholder="0">
+      </div>
+      <div class="field">
+        <label for="salesOffersGenerated">Sales Offers Generated Today <span class="req">*</span></label>
+        <input type="text" id="salesOffersGenerated" name="salesOffersGenerated" inputmode="numeric" pattern="[0-9]*"
+               required title="Numbers only — enter 0 if there was no activity"
+               maxlength="6" autocomplete="off" placeholder="0">
+      </div>
+      <div class="field">
+        <label for="leadFollowUps">No. of Lead Follow-ups Completed <span class="req">*</span></label>
+        <input type="text" id="leadFollowUps" name="leadFollowUps" inputmode="numeric" pattern="[0-9]*"
+               required title="Numbers only — enter 0 if there was no activity"
+               maxlength="6" autocomplete="off" placeholder="0">
+      </div>
+      <div class="field">
+        <label for="agentsEngaged">Agents Engaged (Calls/WhatsApp/Conversations) <span class="req">*</span></label>
+        <input type="text" id="agentsEngaged" name="agentsEngaged" inputmode="numeric" pattern="[0-9]*"
+               required title="Numbers only — enter 0 if there was no activity"
+               maxlength="6" autocomplete="off" placeholder="0">
+      </div>
+    </div>
+  </section>
+</main>
+
+<footer>AMIS Real Estate Development · Sales Operations</footer>
+
+<div class="submitbar">
+  <div class="inner">
+    <div class="voice-row">
+      <button type="button" id="micBtn" class="mic-btn" aria-label="Toggle voice control">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path><path d="M19 10v2a7 7 0 0 1-14 0v-2"></path><line x1="12" y1="19" x2="12" y2="23"></line><line x1="8" y1="23" x2="16" y2="23"></line></svg>
+      </button>
+      <div class="voice-caption">
+        <div id="voiceState">Tap the mic to fill fields by voice</div>
+        <div id="voiceHeard"></div>
+      </div>
+      <button type="button" id="voiceHelpBtn" class="voice-help-btn" aria-label="Voice command help">?</button>
+    </div>
+    <div class="voice-help" id="voiceHelp">
+      Say a command, then a number: <code>callouts 5</code>, <code>briefings 2</code>,
+      <code>broker meetings inside office 3</code>, <code>broker meetings outside office 1</code>,
+      <code>client meetings 4</code>, <code>broker meetings inside office tomorrow 2</code>,
+      <code>broker meetings outside office tomorrow 1</code>, <code>client meetings tomorrow 3</code>,
+      <code>registration 1</code>, <code>pictures 6</code>, <code>sales offers 2</code>,
+      <code>lead 5</code>, <code>engaged 10</code>.<br><br>
+      Also: <code>sales manager [name]</code>, <code>status normal</code> / <code>status leave</code>,
+      and <code>submit</code> to send the report. Numbers can be said as words.
+    </div>
+    <button id="submitBtn" type="submit">Submit Report</button>
+    <p id="status" role="status"></p>
+  </div>
+</div>
+
+</form>
+
+<div class="overlay" id="missing" role="dialog" aria-modal="true" aria-labelledby="missCount">
+  <div class="card" style="text-align:left;">
+    <div class="warn">!</div>
+    <h3 id="missCount" style="text-align:center;">Fields still blank</h3>
+    <p style="text-align:center;margin-bottom:14px;">Every field on this form is required.
+      If there was no activity, the correct entry is <strong>0</strong> &mdash; not a blank.</p>
+    <ul id="missList" class="misslist"></ul>
+    <button type="button" id="fillZeroBtn" class="primary">Enter 0 for these and submit</button>
+    <button type="button" id="reviewBtn" style="margin-top:10px;">Go back and fill them in</button>
+  </div>
+</div>
+
+</div>
+
+<script>
+  // The fields themselves are plain HTML above, so the form renders even where
+  // scripts are blocked (iOS Mail preview, for one). This list drives validation.
+  var ALL = [
+    {id:'calloutsToday',            label:'Total Callouts Today (Connected Calls)'},
+    {id:'briefingsToday',           label:'Agency Briefings'},
+    {id:'meetingsInsideToday',      label:'Broker Meetings \u2014 Inside Office'},
+    {id:'meetingsOutsideToday',     label:'Broker Meetings \u2014 Outside Office'},
+    {id:'clientMeetingsToday',      label:'Client Meetings Today'},
+    {id:'briefingsInsideTomorrow',  label:'Broker Meetings Inside The Office Tomorrow'},
+    {id:'briefingsOutsideTomorrow', label:'Broker Meetings Outside The Office Tomorrow'},
+    {id:'clientMeetingsTomorrow',   label:'Client Meetings Tomorrow'},
+    {id:'brokerageRegInitiated',    label:'Brokerage Registration Initiated Today'},
+    {id:'picturesSubmitted',        label:'Pictures Submitted Today'},
+    {id:'salesOffersGenerated',     label:'Sales Offers Generated Today'},
+    {id:'leadFollowUps',            label:'No. of Lead Follow-ups Completed'},
+    {id:'agentsEngaged',            label:'Agents Engaged (Calls/WhatsApp/Conversations)'}
+  ];
+
+  // Scripts are running, so take over validation from the browser: that lets the
+  // blank-field prompt appear instead of the native "fill out this field" tooltip.
+  // With scripts off, the required attributes in the markup do the job instead.
+  document.getElementById('kpiForm').setAttribute('novalidate', 'novalidate');
+
+  /* ---- digits only: letters and symbols never make it into a field ---- */
+  ALL.forEach(function(f){
+    var el = document.getElementById(f.id);
+    el.addEventListener('input', function(){
+      var clean = el.value.replace(/[^0-9]/g, '');
+      if (clean !== el.value) el.value = clean;
+    });
+    el.addEventListener('keypress', function(ev){
+      if (ev.key.length === 1 && !/[0-9]/.test(ev.key)) ev.preventDefault();
+    });
+    el.addEventListener('paste', function(ev){
+      ev.preventDefault();
+      var t = (ev.clipboardData || window.clipboardData).getData('text') || '';
+      el.value = (el.value + t).replace(/[^0-9]/g, '').slice(0, 6);
+    });
+  });
+
+  /* ---- the date always opens on today ---- */
+  function todayISO(){
+    var n = new Date();
+    return new Date(n.getTime() - n.getTimezoneOffset() * 60000).toISOString().slice(0, 10);
+  }
+  var DAYS = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var MONTHS = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  function showToday(){
+    var n = new Date();
+    var el = document.getElementById('reportDate');
+    if (el) el.textContent = DAYS[n.getDay()] + ', ' + n.getDate() + ' ' + MONTHS[n.getMonth()] + ' ' + n.getFullYear();
+  }
+  showToday();
+  document.addEventListener('visibilitychange', function(){ if (!document.hidden) showToday(); });
+
+  function say(msg, bad){
+    var el = document.getElementById('status');
+    el.style.display = 'block';
+    el.style.color = bad ? '#A6432B' : '#9C5F26';
+    el.textContent = msg;
+  }
+  function flag(el){
+    el.classList.add('err');
+    el.focus();
+    try { el.scrollIntoView({block:'center', behavior:'smooth'}); }
+    catch (e) { try { el.scrollIntoView(); } catch (e2) {} }
+    setTimeout(function(){ el.classList.remove('err'); }, 2500);
+  }
+
+  function blanks(){
+    if (onLeave()) return [];
+    return ALL.filter(function(f){
+      return (document.getElementById(f.id).value || '').trim() === '';
+    });
+  }
+
+  /* ---- On leave: every figure is zero and the form needs no typing ---- */
+  function onLeave(){
+    var el = document.getElementById('dayStatus');
+    return !!el && el.value === 'yes';
+  }
+  function applyLeaveState(){
+    var on = onLeave();
+    if (on) document.body.classList.add('onleave'); else document.body.classList.remove('onleave');
+    var bar = document.getElementById('leaveBar');
+    if (bar) bar.hidden = !on;
+    ALL.forEach(function(f){
+      var el = document.getElementById(f.id);
+      if (!el) return;
+      if (on){
+        el.value = '0';
+        el.readOnly = true;
+        el.classList.remove('err');
+      } else {
+        el.readOnly = false;
+        if (el.value === '0' && el.getAttribute('data-auto') === '1') el.value = '';
+      }
+      el.setAttribute('data-auto', on ? '1' : '0');
+    });
+  }
+  (function(){
+    var el = document.getElementById('dayStatus');
+    if (el) el.addEventListener('change', applyLeaveState);
+    applyLeaveState();
+  })();
+
+  function doSubmit(){
+    var btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting\u2026';
+    say('Sending your report\u2026', false);
+    // A plain form POST: no cross-origin call, so this works from a file on disk,
+    // from a mail attachment, or from anywhere else the file is opened.
+    document.getElementById('kpiForm').submit();
+  }
+
+  document.getElementById('kpiForm').addEventListener('submit', function(ev){
+    var mgrEl  = document.getElementById('salesManager');
+    if (!mgrEl.value){ ev.preventDefault(); say('Please select your name.', true); return flag(mgrEl); }
+
+    var missing = blanks();
+    if (missing.length){
+      ev.preventDefault();
+      document.getElementById('missCount').textContent =
+        missing.length + (missing.length === 1 ? ' field is' : ' fields are') + ' still blank';
+      document.getElementById('missList').innerHTML =
+        missing.map(function(f){ return '<li>' + f.label + '</li>'; }).join('');
+      document.getElementById('missing').classList.add('on');
+      return;
+    }
+    var btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Submitting\u2026';
+    say('Sending your report\u2026', false);
+  });
+
+  document.getElementById('fillZeroBtn').addEventListener('click', function(){
+    blanks().forEach(function(f){ document.getElementById(f.id).value = '0'; });
+    document.getElementById('missing').classList.remove('on');
+    doSubmit();
+  });
+  document.getElementById('reviewBtn').addEventListener('click', function(){
+    document.getElementById('missing').classList.remove('on');
+    var first = blanks()[0];
+    if (first) flag(document.getElementById(first.id));
+  });
+</script>
+
+<script>
+  // ---------- Voice control ----------
+  // Lets a Sales Manager fill this exact form by speaking a short command
+  // ("callouts five") and finish with "submit" — which clicks the real
+  // Submit Report button and goes through the same validation + POST to
+  // the Apps Script endpoint above as a manual submission would.
+  (function(){
+    var $ = function(id){ return document.getElementById(id); };
+
+    function setVoiceHeard(msg){ var el = $('voiceHeard'); if (el) el.textContent = msg; }
+    function setVoiceState(msg){ var el = $('voiceState'); if (el) el.textContent = msg; }
+
+    function speak(text){
+      if (!('speechSynthesis' in window)) return;
+      try{
+        var u = new SpeechSynthesisUtterance(text);
+        u.rate = 1.05;
+        window.speechSynthesis.cancel();
+        window.speechSynthesis.speak(u);
+      }catch(e){}
+    }
+
+    function setFieldValue(id, val){
+      var el = $(id);
+      if (!el) return;
+      el.value = String(val);
+      el.dispatchEvent(new Event('input', {bubbles:true}));
+    }
+
+    function fieldLabel(id){
+      for (var i=0;i<ALL.length;i++){ if (ALL[i].id === id) return ALL[i].label; }
+      return id;
+    }
+
+    // ---- number word parsing (spoken "five" -> 5, "twenty three" -> 23) ----
+    var ONES = {zero:0,one:1,two:2,three:3,four:4,five:5,six:6,seven:7,eight:8,nine:9,
+      ten:10,eleven:11,twelve:12,thirteen:13,fourteen:14,fifteen:15,sixteen:16,
+      seventeen:17,eighteen:18,nineteen:19};
+    var TENS = {twenty:20,thirty:30,forty:40,fifty:50,sixty:60,seventy:70,eighty:80,ninety:90};
+
+    function extractNumber(clean, words){
+      var digitMatch = clean.match(/\d+/);
+      if (digitMatch) return parseInt(digitMatch[0], 10);
+      for (var i=0;i<words.length;i++){
+        var w = words[i];
+        if (TENS[w] !== undefined){
+          var next = words[i+1];
+          if (next !== undefined && ONES[next] !== undefined && ONES[next] < 10){
+            return TENS[w] + ONES[next];
+          }
+          return TENS[w];
+        }
+        if (ONES[w] !== undefined) return ONES[w];
+      }
+      return null;
+    }
+
+    // ---- direct-match short commands, longest phrase checked first ----
+    var COMMAND_PHRASES = [
+      {phrase:'broker meetings inside office tomorrow', id:'briefingsInsideTomorrow'},
+      {phrase:'broker meetings outside office tomorrow', id:'briefingsOutsideTomorrow'},
+      {phrase:'inside office tomorrow', id:'briefingsInsideTomorrow'},
+      {phrase:'outside office tomorrow', id:'briefingsOutsideTomorrow'},
+      {phrase:'client meetings tomorrow', id:'clientMeetingsTomorrow'},
+      {phrase:'broker meetings inside office', id:'meetingsInsideToday'},
+      {phrase:'broker meetings outside office', id:'meetingsOutsideToday'},
+      {phrase:'inside office', id:'meetingsInsideToday'},
+      {phrase:'outside office', id:'meetingsOutsideToday'},
+      {phrase:'client meetings', id:'clientMeetingsToday'},
+      {phrase:'callouts', id:'calloutsToday'},
+      {phrase:'briefings', id:'briefingsToday'},
+      {phrase:'registration', id:'brokerageRegInitiated'},
+      {phrase:'pictures', id:'picturesSubmitted'},
+      {phrase:'sales offers', id:'salesOffersGenerated'},
+      {phrase:'offers', id:'salesOffersGenerated'},
+      {phrase:'lead', id:'leadFollowUps'},
+      {phrase:'engaged', id:'agentsEngaged'}
+    ].sort(function(a,b){ return b.phrase.split(' ').length - a.phrase.split(' ').length; });
+
+    function matchCommandPhrase(padded){
+      for (var i=0;i<COMMAND_PHRASES.length;i++){
+        var c = COMMAND_PHRASES[i];
+        var pattern = '\\b' + c.phrase.replace(/ /g,'\\s+') + '\\b';
+        if (new RegExp(pattern).test(padded)) return c;
+      }
+      return null;
+    }
+
+    var MANAGERS = ['Alejandro','Elaheh','Hassan','Soha','Valeria'];
+
+    function tryManager(words, raw){
+      if (words.indexOf('manager') === -1) return null;
+      for (var i=0;i<MANAGERS.length;i++){
+        if (raw.toLowerCase().indexOf(MANAGERS[i].toLowerCase()) !== -1) return MANAGERS[i];
+      }
+      return null;
+    }
+
+    function tryStatus(words){
+      if (words.indexOf('status') === -1 && words.indexOf('leave') === -1 && words.indexOf('normal') === -1) return null;
+      if (words.indexOf('leave') !== -1) return 'yes';
+      if (words.indexOf('normal') !== -1) return 'no';
+      return null;
+    }
+
+    function processTranscript(raw){
+      var clean = raw.toLowerCase().trim();
+      var words = clean.replace(/[.,!?]/g,'').split(/\s+/);
+      setVoiceHeard('\u201c' + raw + '\u201d');
+
+      var isSubmit = false;
+      for (var i=0;i<words.length;i++){ if (words[i].indexOf('submit') === 0){ isSubmit = true; break; } }
+      if (isSubmit){
+        setVoiceState('Submitting\u2026');
+        speak('Submitting your report.');
+        $('submitBtn').click();
+        return;
+      }
+
+      var mgr = tryManager(words, raw);
+      if (mgr){
+        var mgrEl = $('salesManager');
+        mgrEl.value = mgr;
+        mgrEl.dispatchEvent(new Event('change', {bubbles:true}));
+        setVoiceState('Sales Manager set to ' + mgr);
+        speak('Manager set to ' + mgr);
+        return;
+      }
+
+      var status = tryStatus(words);
+      if (status){
+        var statusEl = $('dayStatus');
+        statusEl.value = status;
+        statusEl.dispatchEvent(new Event('change', {bubbles:true}));
+        var label = status === 'yes' ? 'On leave today' : 'Reporting as normal';
+        setVoiceState('Status set to "' + label + '"');
+        speak('Status set to ' + label);
+        return;
+      }
+
+      var padded = ' ' + words.join(' ') + ' ';
+      var field = matchCommandPhrase(padded);
+      if (field){
+        var num = extractNumber(clean, words);
+        if (num === null){
+          setVoiceState('Heard the field, but not a number \u2014 try again');
+          speak('I heard the field but not a number. Please repeat with a number.');
+          return;
+        }
+        setFieldValue(field.id, num);
+        var lab = fieldLabel(field.id);
+        setVoiceState(lab.split('(')[0].trim() + ' set to ' + num);
+        speak(lab.split('(')[0].trim() + ' set to ' + num);
+        return;
+      }
+
+      setVoiceState("Didn't catch a field \u2014 tap the ? for the command list");
+    }
+
+    // ---- speech recognition wiring ----
+    var SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    var micBtn = $('micBtn');
+
+    if (!SR){
+      if (micBtn) micBtn.disabled = true;
+      setVoiceState('Voice control needs Chrome or Edge with mic access');
+    } else {
+      var recognition = null, listening = false, shouldRestart = false;
+
+      function build(){
+        var r = new SR();
+        r.continuous = true;
+        r.interimResults = false;
+        r.lang = 'en-US';
+        r.onresult = function(e){
+          var res = e.results[e.results.length - 1];
+          if (res.isFinal) processTranscript(res[0].transcript);
+        };
+        r.onerror = function(e){
+          if (e.error === 'no-speech' || e.error === 'audio-capture') return;
+          if (e.error === 'not-allowed'){
+            shouldRestart = false;
+            stopListening();
+            setVoiceState('Microphone access denied');
+          }
+        };
+        r.onend = function(){
+          if (shouldRestart){ try{ r.start(); }catch(e){} }
+          else {
+            listening = false;
+            micBtn.classList.remove('listening');
+            setVoiceState('Tap the mic to fill fields by voice');
+          }
+        };
+        return r;
+      }
+
+      function startListening(){
+        recognition = build();
+        shouldRestart = true;
+        try{
+          recognition.start();
+          listening = true;
+          micBtn.classList.add('listening');
+          setVoiceState('Listening\u2026');
+        }catch(e){}
+      }
+      function stopListening(){
+        shouldRestart = false;
+        if (recognition){ try{ recognition.stop(); }catch(e){} }
+        listening = false;
+        micBtn.classList.remove('listening');
+        setVoiceState('Tap the mic to fill fields by voice');
+      }
+
+      micBtn.addEventListener('click', function(){
+        if (listening) stopListening(); else startListening();
+      });
+    }
+
+    var helpBtn = $('voiceHelpBtn');
+    if (helpBtn){
+      helpBtn.addEventListener('click', function(){
+        $('voiceHelp').classList.toggle('open');
+      });
+    }
+  })();
+</script>
+
+</body>
+</html>
