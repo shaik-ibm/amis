@@ -1,0 +1,17 @@
+{
+  "name": "AMIS HUB",
+  "short_name": "AMIS HUB",
+  "description": "AMIS Development sales hub — inventory, sales offers, documents and daily reporting.",
+  "start_url": "./AMISHUBApp.html",
+  "id": "./AMISHUBApp.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait-primary",
+  "background_color": "#100e0c",
+  "theme_color": "#100e0c",
+  "icons": [
+    { "src": "./icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "./icon-512-maskable.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
